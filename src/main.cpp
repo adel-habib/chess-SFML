@@ -2,7 +2,17 @@
 #include <iostream>
 #include <math.h>
 
-// BOARD 
+struct Posistion 
+{
+   int x;
+   int y; 
+};
+struct Square
+{
+    int x;
+    int y;
+};
+
 
 
 const int8_t bKING = 1;
@@ -19,8 +29,6 @@ const int8_t wKNIGHT = -5;
 const int8_t wPAWN = -6;
 const int8_t emptySquare = 0;
 
-int8_t currentFigure = 0;
-
 int8_t board[8][8] = {
 {wROCK,wKNIGHT,wBISHOP,wQUEEN,wKING,wBISHOP,wKING,wROCK},
 {wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN},
@@ -32,13 +40,22 @@ int8_t board[8][8] = {
 {bROCK,bKNIGHT,bBISHOP,bQUEEN,bKING,bBISHOP,bKNIGHT,bROCK},
 };
 
+int8_t currentFigureIndex = 0;
+int cnt = 0;
 
+Posistion oldPos, newPos;
+Square currentSquare, newSquare;
+int currentPiece;
 // Figures
+int squareSize = 100;
+
+sf::Color col1 = sf::Color(232,235,239);
+sf::Color col2 = sf::Color(125,135,150);
+
 
 sf::Texture bk, bq, br, bb, bn, bp, wk, wq, wr, wb, wn, wp;
 sf::Sprite Figures[32];
 
-int cnt = 0;
 void loadPositions(){
     for (size_t i = 0; i < 8; i++)
     {
@@ -102,29 +119,6 @@ void loadPositions(){
     
 }
 
-struct posistion 
-{
-   int x;
-   int y; 
-};
-struct Square
-{
-    int8_t x;
-    int8_t y;
-};
-
-posistion oldPos, newPos;
-Square currentSquare, newSquare;
-int currentPiece;
-
-
-int squareSize = 100;
-sf::Color col1 = sf::Color(232,235,239);
-sf::Color col2 = sf::Color(125,135,150);
-sf::Vector2f sc(0.05,0.05);
-sf::Vector2i pos;
-
-
 
 void drawBoard(sf::RenderWindow &window, sf::RectangleShape rec){
 for (size_t j = 0; j < 8; j++)
@@ -139,33 +133,36 @@ for (size_t j = 0; j < 8; j++)
 }
 
 
+// algebric notation 
+std::string getMove(Square fromS, Square toS){
+    std::string from = static_cast<char>('A' + abs(7-fromS.y)) + std::to_string(fromS.x+1);
+    std::string to = static_cast<char>('A' + abs(7-toS.y)) + std::to_string(toS.x+1);
+    return from + to ;
+}
+
+
+
+#define validMove Figures[currentFigureIndex].setPosition(newPos.x,newPos.y);
+#define invalidMove Figures[currentFigureIndex].setPosition(odlPos.x,oldPos.y);
+
+
+bool pawnMove(){
+
+}
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Chess!");
     sf::RectangleShape square;
     square.setSize(sf::Vector2f(squareSize, squareSize));
-    sf::Texture texture;
     bool isMoving = false;
     float dx = 0, dy=0;
-    texture.loadFromFile("assets/bK.png");
-    sf::Sprite piece;
-    piece.setTexture(texture);
-    float xpos = 0, ypos = 0;
     
     //// 
 
-    bk.loadFromFile("assets/bK.png");
-    bq.loadFromFile("assets/bQ.png");
-    br.loadFromFile("assets/bR.png");
-    bb.loadFromFile("assets/bB.png");
-    bn.loadFromFile("assets/bN.png");
-    bp.loadFromFile("assets/bP.png"); 
-    wk.loadFromFile("assets/wK.png");
-    wq.loadFromFile("assets/wQ.png");
-    wr.loadFromFile("assets/wR.png");
-    wb.loadFromFile("assets/wB.png");    
-    wn.loadFromFile("assets/wN.png");
-    wp.loadFromFile("assets/wP.png");
+    bk.loadFromFile("assets/bK.png"); bq.loadFromFile("assets/bQ.png"); br.loadFromFile("assets/bR.png"); bb.loadFromFile("assets/bB.png");
+    bn.loadFromFile("assets/bN.png"); bp.loadFromFile("assets/bP.png"); wk.loadFromFile("assets/wK.png"); wq.loadFromFile("assets/wQ.png");
+    wr.loadFromFile("assets/wR.png"); wb.loadFromFile("assets/wB.png"); wn.loadFromFile("assets/wN.png"); wp.loadFromFile("assets/wP.png");
 
     loadPositions();
 
@@ -175,7 +172,6 @@ int main()
     while (window.isOpen())
     {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window); // Get's updated all the time => while 
-        
         
         
         sf::Event event;
@@ -188,48 +184,46 @@ int main()
             else if (event.type == sf::Event::MouseButtonPressed)
             {
                 // Which Figure is being pressed? 
+                
                    for (size_t i = 0; i < 32; i++)
                    {
                        if(Figures[i].getGlobalBounds().contains(mousePos.x,mousePos.y)){
                            isMoving = true; // True if one of the figures is pressed 
-
                            currentSquare.x = round(sf::Mouse::getPosition(window).x/100);
                            currentSquare.y = round(sf::Mouse::getPosition(window).y/100);
-
-                           oldPos.x = currentSquare.x*100; oldPos.y = currentSquare.y*100;
+                           oldPos.x = currentSquare.x*100; 
+                           oldPos.y = currentSquare.y*100;
 
                            currentPiece = board[currentSquare.y][currentSquare.x];
-                           currentFigure = i;
-                           xpos = 100*currentSquare.x;
-                           ypos = 100*currentSquare.y;
-                           dx = mousePos.x - xpos;
-                           dy = mousePos.y - ypos;
+                           currentFigureIndex = i;
+
+                           dx = mousePos.x - oldPos.x;
+                           dy = mousePos.y - oldPos.y;
+                           
                        }
                    }
-
 
             }
             if(event.type==sf::Event::MouseButtonReleased){
                 isMoving = false;
-                newSquare.x = round(Figures[currentFigure].getPosition().x/100); 
-                newSquare.y = round(Figures[currentFigure].getPosition().y/100);
+                newSquare.x = round(Figures[currentFigureIndex].getPosition().x/100); 
+                newSquare.y = round(Figures[currentFigureIndex].getPosition().y/100);
                 newPos.x = 100 * newSquare.x;
                 newPos.y = 100 * newSquare.y;
-                if(currentPiece == wPAWN || currentPiece==bPAWN){
-                    if (abs(currentSquare.y - newSquare.y)<3)
-                    {
-                        Figures[currentFigure].setPosition(newPos.x,newPos.y);
-                    }
-                    else{Figures[currentFigure].setPosition(oldPos.x,oldPos.y);}
-                    
-                }else{Figures[currentFigure].setPosition(oldPos.x,oldPos.y);}
-                
 
-                //std::cout << "Old Sqaure:" <<currentSquare.x << "," <<currentSquare.y << "\n" << "newSq" << newSquare.x << "," << newSquare.y << "\n";
+                if(currentPiece == wPAWN || currentPiece==bPAWN){
+                    if (abs(currentSquare.y - newSquare.y)<3 && (currentSquare.x -newSquare.x ==0))
+                    {
+                        validMove;
+                    }
+                    else{Figures[currentFigureIndex].setPosition(oldPos.x,oldPos.y);}
+                    
+                }else{Figures[currentFigureIndex].setPosition(oldPos.x,oldPos.y);}
+                std::cout<< getMove(currentSquare,newSquare) <<"\n";
             }
             
             if (isMoving) {
-                Figures[currentFigure].setPosition(mousePos.x-dy,mousePos.y-dy);
+                Figures[currentFigureIndex].setPosition(mousePos.x-dy,mousePos.y-dy);
                 }
         }
 

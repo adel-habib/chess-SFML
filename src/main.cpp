@@ -11,6 +11,13 @@ struct Square
 {
     int x;
     int y;
+
+    Square operator-(Square squ){
+        Square newSquare;
+        newSquare.x = x - squ.x;
+        newSquare.y = y -squ.y;
+        return newSquare;
+    }
 };
 
 
@@ -30,22 +37,23 @@ const int8_t wPAWN = -6;
 const int8_t emptySquare = 0;
 
 int8_t board[8][8] = {
-{wROCK,wKNIGHT,wBISHOP,wQUEEN,wKING,wBISHOP,wKING,wROCK},
-{wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN},
 {bROCK,bKNIGHT,bBISHOP,bQUEEN,bKING,bBISHOP,bKNIGHT,bROCK},
+{bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN},
+{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
+{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
+{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
+{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
+{wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN},
+{wROCK,wKNIGHT,wBISHOP,wQUEEN,wKING,wBISHOP,wKING,wROCK},
 };
 
 int8_t currentFigureIndex = 0;
 int cnt = 0;
 
-Posistion oldPos, newPos;
-Square currentSquare, newSquare;
+Posistion fromPos, toPos;
+Square from, to;
 int currentPiece;
+int targetPiece;
 // Figures
 int squareSize = 100;
 
@@ -135,19 +143,64 @@ for (size_t j = 0; j < 8; j++)
 
 // algebric notation 
 std::string getMove(Square fromS, Square toS){
-    std::string from = static_cast<char>('A' + abs(7-fromS.y)) + std::to_string(fromS.x+1);
-    std::string to = static_cast<char>('A' + abs(7-toS.y)) + std::to_string(toS.x+1);
-    return from + to ;
+    std::string fromm = static_cast<char>('a' + abs(7-fromS.y)) + std::to_string(fromS.x+1);
+    std::string too = static_cast<char>('a' + abs(7-toS.y)) + std::to_string(toS.x+1);
+    return fromm + too ;
 }
 
 
+bool isAllowed(){
+    // checks if the next square is empty or has a piece of opposite color 
+    bool isEmpty = board[to.y][to.x] == 0;
+    bool isDiff = std::signbit(board[from.y][from.x]*board[to.y][to.x]);
+    if(isEmpty || isDiff) return true;
+    else return false;
 
-#define validMove Figures[currentFigureIndex].setPosition(newPos.x,newPos.y);
-#define invalidMove Figures[currentFigureIndex].setPosition(odlPos.x,oldPos.y);
+}
+bool isWhite(){
+    if(currentPiece<0) return true;
+    else return false;
+}
+bool isBlack(){
+    if(currentPiece>0) return true;
+    else return false;
+}
+
+void update_board(){
+    board[to.y][to.x] = board[from.y][from.x];
+    board[from.y][from.x] = emptySquare;
+}
+
+void movePiece(){
+    if(targetPiece!=emptySquare){for (size_t i = 0; i < 32; i++)
+    {
+        if(Figures[i].getGlobalBounds().left == toPos.x && Figures[i].getGlobalBounds().top==toPos.y){Figures[i].setPosition(-100,100);break;}
+    }
+    }
+    Figures[currentFigureIndex].setPosition(toPos.x,toPos.y);
+    update_board();
+}
+void moveBack(){Figures[currentFigureIndex].setPosition(fromPos.x,fromPos.y);}
+
+bool knightValidMove(Square old, Square next){
+    if(abs(old.x-next.x)==2 && abs(old.y-next.y)==1 && isAllowed()){return true;}
+    else if (abs(old.y-next.y)==2 && abs(old.x-next.x)==1 && isAllowed()){return true;}
+    else return false;
+}
 
 
-bool pawnMove(){
-
+bool pawnValidMove(){
+    Square len = from - to; 
+    bool isForward = (isWhite() && (len.y>0) ) || (isBlack() && (len.y<0));
+    std::cout<<"is Foraward: " << isForward<< "\n";
+    int dn = isWhite()? from.y -1 : from.y+1 ;
+    bool isBlocked = board[dn][from.x] != emptySquare;
+    if(isForward && isAllowed()){
+        if(len.x==0 && abs(len.y)<3 && !isBlocked){return true;}
+        else if(abs(len.x)==1 && abs(len.y)==1 && targetPiece!=emptySquare){return true;}
+        else return false;
+    }
+    else return false;
 }
 
 int main()
@@ -189,16 +242,17 @@ int main()
                    {
                        if(Figures[i].getGlobalBounds().contains(mousePos.x,mousePos.y)){
                            isMoving = true; // True if one of the figures is pressed 
-                           currentSquare.x = round(sf::Mouse::getPosition(window).x/100);
-                           currentSquare.y = round(sf::Mouse::getPosition(window).y/100);
-                           oldPos.x = currentSquare.x*100; 
-                           oldPos.y = currentSquare.y*100;
+                           std::cout<<Figures[i].getGlobalBounds().left<< "and" << Figures[i].getGlobalBounds().top <<"\n";
+                           from.x = round(sf::Mouse::getPosition(window).x/100);
+                           from.y = round(sf::Mouse::getPosition(window).y/100);
+                           fromPos.x = from.x*100; 
+                           fromPos.y = from.y*100;
 
-                           currentPiece = board[currentSquare.y][currentSquare.x];
+                           currentPiece = board[from.y][from.x];
                            currentFigureIndex = i;
 
-                           dx = mousePos.x - oldPos.x;
-                           dy = mousePos.y - oldPos.y;
+                           dx = mousePos.x - fromPos.x;
+                           dy = mousePos.y - fromPos.y;
                            
                        }
                    }
@@ -206,20 +260,32 @@ int main()
             }
             if(event.type==sf::Event::MouseButtonReleased){
                 isMoving = false;
-                newSquare.x = round(Figures[currentFigureIndex].getPosition().x/100); 
-                newSquare.y = round(Figures[currentFigureIndex].getPosition().y/100);
-                newPos.x = 100 * newSquare.x;
-                newPos.y = 100 * newSquare.y;
+                to.x = round(Figures[currentFigureIndex].getPosition().x/100); 
+                to.y = round(Figures[currentFigureIndex].getPosition().y/100);
+                toPos.x = 100 * to.x;
+                toPos.y = 100 * to.y;
+                targetPiece = board[to.y][to.x];
 
                 if(currentPiece == wPAWN || currentPiece==bPAWN){
-                    if (abs(currentSquare.y - newSquare.y)<3 && (currentSquare.x -newSquare.x ==0))
+                    if (pawnValidMove())
                     {
-                        validMove;
+                        movePiece();
                     }
-                    else{Figures[currentFigureIndex].setPosition(oldPos.x,oldPos.y);}
+                    else{moveBack();}
                     
-                }else{Figures[currentFigureIndex].setPosition(oldPos.x,oldPos.y);}
-                std::cout<< getMove(currentSquare,newSquare) <<"\n";
+                }else if (currentPiece == wKNIGHT || currentPiece == bKNIGHT)
+                {
+                   if (knightValidMove(from,to))
+                   {
+                       movePiece();
+                   }
+                   else{moveBack();}
+                   
+                }
+                
+                
+                else{moveBack();}
+                std::cout<< getMove(from,to) <<"\n";
             }
             
             if (isMoving) {

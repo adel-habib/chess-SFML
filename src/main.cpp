@@ -2,6 +2,74 @@
 #include <iostream>
 #include <math.h>
 
+
+
+enum class Color {BLACK, WHITE};
+
+namespace fig{
+    const int8_t bKING = 1;
+    const int8_t bQUEEN = 2;
+    const int8_t bROCK = 3;
+    const int8_t bBISHOP = 4;
+    const int8_t bKNIGHT = 5;
+    const int8_t bPAWN = 6;
+    const int8_t wKING = -1;
+    const int8_t wQUEEN = -2;
+    const int8_t wROCK = -3;
+    const int8_t wBISHOP = -4;
+    const int8_t wKNIGHT = -5;
+    const int8_t wPAWN = -6;
+    const int8_t emptySquare = 0;
+};
+
+class Piece{
+
+    private:
+    Color color;
+    int8_t vlaue;
+    bool isAttacked;
+    bool isFirstMove;
+    sf::Sprite figure;
+
+
+    public:
+    void set_color(Color col){
+        this->color = col;
+    }
+    void set_value(int8_t val){
+        this->vlaue = val;
+    }
+    void set_figure(sf::Texture t){
+        this->figure.setTexture(t);
+    }
+
+};
+
+class Board{
+    private:
+    int8_t board[8][8];
+
+    public:
+    Board(){
+        int cnt = 0;
+       for (size_t i = 2; i < 6; i++)
+       {
+           for (size_t j = 0; j < 7; j++)
+           {
+               board[i][j] = fig::emptySquare;
+           }
+           
+       }
+       for (size_t i = 0; i < 8; i++)
+       {
+           board[1][cnt] = fig::bPAWN;
+           board[6][cnt] = fig::wPAWN;
+       }
+       
+    }
+
+};
+
 struct Posistion 
 {
    int x;

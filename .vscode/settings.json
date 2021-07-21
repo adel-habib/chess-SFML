@@ -2,7 +2,8 @@
     "files.associations": {
         "*.tpp": "cpp",
         "atomic": "cpp",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "cmath": "cpp"
     },
     "terminal.integrated.shell.windows": "cmd.exe"
 }

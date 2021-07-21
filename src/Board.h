@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 #include "Constants.h"
-
+#include "Position.h"
 class Piece;
 class Board{
     private:
@@ -18,6 +18,7 @@ class Board{
     void draw_board(sf::RenderWindow &window);
     void draw_pieces(Piece pieces[], sf::RenderWindow &window);
     int get_size();
+    int8_t get_piece(const Position &square);
 };
 
 #endif

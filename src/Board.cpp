@@ -137,3 +137,15 @@ void Board::draw_pieces(Piece pieces[], sf::RenderWindow &window){
             window.draw(pieces[i].figure);
         }
 }
+
+int8_t Board::get_piece(const Position &square){
+    if (square.kind==Position::Kind::SQUARE && square.x<8 && square.y <8)
+    {
+       return board[square.y][square.x];
+    }else 
+    {
+        std::cout << " Get_piece only takes a square \n";
+    }
+    
+    
+}

@@ -7,18 +7,10 @@
 #include "Position.h"
 #include "Game.h"
 
-// algebric notation 
-std::string getMove(const Position &fromS, const Position &toS){
-    std::string fromm = static_cast<char>('a' + abs(7-fromS.y)) + std::to_string(fromS.x+1);
-    std::string too = static_cast<char>('a' + abs(7-toS.y)) + std::to_string(toS.x+1);
-    return fromm + too ;
-}
-
 
 int main()
 {
 
-    
     Piece pieces[32];
     Board B = Board();
     B.init_board();
@@ -28,15 +20,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 800), "Chess!");
     sf::RectangleShape square;
     square.setSize(sf::Vector2f(B.get_size(), B.get_size()));
-    bool isMoving = false;
-    float dx = 0, dy=0;    
     Game game = Game();
-
-    //// 
-
-
-   
-    
 
     while (window.isOpen())
     {
@@ -57,26 +41,29 @@ int main()
                    for (size_t i = 0; i < 32; i++)
                    {
                        if(pieces[i].figure.getGlobalBounds().contains(mousePos.x,mousePos.y)){
-                           game.set_movement(true);
                            game.set_current_coords(sf::Mouse::getPosition(window));
                            game.set_current_piece(B.board);
                            game.set_current_figure(i);
-                           dx = mousePos.x - game.get_current_coords().x;
-                           dy = mousePos.y - game.get_current_coords().y;                           
+                           game.validate_turn();
+                           game.set_offset(mousePos.x, mousePos.y);                       
                        }
                    }
 
             }
             if(event.type==sf::Event::MouseButtonReleased){
 
-                game.set_movement(false);
+                if(game.get_is_moving()){
                 game.set_target_coords(mousePos);
                 pieces[game.get_current_figure_index()].figure.setPosition(game.get_target_coords().x,game.get_target_coords().y);
+                game.coord_to_notation();
+                game.toggle_turn();
+                }
+                game.set_movement(false);
 
             }
             
             if (game.get_is_moving()) {
-                pieces[game.get_current_figure_index()].figure.setPosition(mousePos.x-dx,mousePos.y-dy);
+                pieces[game.get_current_figure_index()].figure.setPosition(mousePos.x-game.get_offset().x,mousePos.y-game.get_offset().y);
                 }
         }
 

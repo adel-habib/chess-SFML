@@ -17,42 +17,23 @@ struct Position
     coordinates coord;
     enum class Kind {INDEX, COORD};
     Kind kind;
-    Position():x(0),y(0){}
-    Position(Kind typ) : x(0), y(0){this->kind = typ;}
+    Position():x(0),y(0){this->set_coords();}
+    Position(Kind typ) : x(0), y(0){this->kind = typ;this->set_coords();}
     Position(int x, int y){
         this->x =x;
         this->y=y;
+        this->set_coords();
     }
     Position(double x, double y){
         this->x = int(x);
         this->y = int(y);
     }
-    Position operator-(Position pos){
-        Position nPos;
-        nPos.x = x - pos.x;
-        nPos.y = y - pos.y;
-        return nPos;
-    }
-    Position operator+(Position pos){
-        Position nPos;
-        nPos.x = x + pos.x;
-        nPos.y = y + pos.y;
-        return nPos;
-    }
-    Position operator*(int mult){
-        Position nPos = Position(this->kind);
-        nPos.x = this->x * mult;
-        nPos.y = this->y * mult;
-        return nPos;
+    
 
+    bool operator==(Position pos){
+        return ( (this->x == pos.x) && (this->y == pos.y) );
     }
-    Position operator=(int num){
-        Position nPos = Position(this->kind);
-        nPos.x = this->x * num;
-        nPos.y = this->y * num;
-        return nPos;
 
-    }
 
     void square_to_coords(Position squ){
         if (squ.kind==Position::Kind::INDEX)

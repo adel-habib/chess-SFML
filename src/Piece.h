@@ -1,8 +1,8 @@
 
 #ifndef PIECE_H
 #define PIECE_H
-#include"Board.h"
-#include "Position.h"
+#include <SFML/Graphics.hpp>
+
 enum class Color {BLACK, WHITE};
 
 class Piece{
@@ -12,7 +12,6 @@ class Piece{
     int8_t vlaue;
     bool isAttacked;
     bool isFirstMove;
-    Position pos;
     
 
     public:

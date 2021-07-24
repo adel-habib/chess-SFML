@@ -17,5 +17,6 @@ void Piece::set_position(int i, int j){
 }
 
 sf::Sprite Piece::get_figure(){
+    
     return this->figure;
 }

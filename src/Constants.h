@@ -2,7 +2,9 @@
 #define MYLIB_CONSTANTS_H 1
 #include <SFML/Graphics.hpp>
 #include<iostream>
-
+const int squareSize=100;
+const sf::Color sq_col1 = sf::Color(181, 136, 99);
+const sf::Color sq_col2 = sf::Color(240, 217, 181);
 namespace fig{
     const int8_t bKING = 1;
     const int8_t bQUEEN = 2;

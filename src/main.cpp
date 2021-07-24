@@ -9,18 +9,15 @@
 
 int main()
 {
-    Piece pieces[32];
-    Board B = Board();
+    Board board = Board();
     Handler handler;
-    B.init_board();
-    B.load_textures();
-    B.load_figures(pieces);
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Chess!");
-    sf::RectangleShape square;
-    square.setSize(sf::Vector2f(B.get_size(), B.get_size()));
+
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Chess!", sf::Style::Titlebar | sf::Style::Close);
+
     while (window.isOpen())
     {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window); // Get's updated all the time => while 
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+        //handler.set_mouse_pos(mousePos);
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -29,33 +26,34 @@ int main()
                 window.close();
             }
             else if (event.type == sf::Event::MouseButtonPressed)
-            {                
-                   for (size_t i = 0; i < 32; i++)
-                   {
-                       if(pieces[i].figure.getGlobalBounds().contains(mousePos.x,mousePos.y)){
-                           handler.handle_mousePress(mousePos,B.board,i);
-                           handler.validate_turn();                     
-                       }
-                   }
-            }
-            if(event.type==sf::Event::MouseButtonReleased){
-                if(handler.is_valid_turn()){
-                handler.handle_mouse_release(mousePos,B.board);
-                pieces[handler.get_cfi()].figure.setPosition(handler.to.coord.x,handler.to.coord.y);
-            }
-            }
-            if (handler.is_valid_turn()) {
-                pieces[handler.get_cfi()].figure.setPosition(mousePos.x-handler.get_offset().x,mousePos.y-handler.get_offset().y);
+            {
+                if (board.is_piece_pressed(mousePos))
+                {
+                    handler.handle_mousePress(mousePos, board.get_board());
+                    handler.validate_turn();
                 }
+            }
+            if (event.type == sf::Event::MouseButtonReleased)
+            {
+                if (handler.is_valid_turn())
+                {
+                    handler.handle_mouse_release(mousePos, board.get_board());
+                    board.place_piece(handler.to);
+                }
+                handler.print_move();
+            }
+            if (handler.is_valid_turn())
+            {
+                board.move_piece(mousePos.x - handler.get_offset().x, mousePos.y - handler.get_offset().y);
+            }
         }
 
         window.clear();
 
-        B.draw_board(window);
-        B.draw_pieces(pieces,window);
+        board.draw_board(window);
+        board.draw_pieces(window);
         window.display();
     }
-   
-    return 0;
 
+    return 0;
 }

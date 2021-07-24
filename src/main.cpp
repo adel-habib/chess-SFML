@@ -6,11 +6,13 @@
 #include "Board.h"
 #include "Position.h"
 #include "Handler.h"
-
+#include "Validator.h"
 int main()
 {
     Board board = Board();
     Handler handler;
+    Validator validator;
+
 
     sf::RenderWindow window(sf::VideoMode(800, 800), "Chess!", sf::Style::Titlebar | sf::Style::Close);
 
@@ -31,6 +33,9 @@ int main()
                 {
                     handler.handle_mousePress(mousePos, board.get_board());
                     handler.validate_turn();
+                    if(handler.is_valid_turn()){
+                        
+                    }
                 }
             }
             if (event.type == sf::Event::MouseButtonReleased)
@@ -38,11 +43,26 @@ int main()
                 if (handler.is_valid_turn())
                 {
                     handler.handle_mouse_release(mousePos, board.get_board());
+                    handler.validate_placement();
+
+                    // Here we want to check the logic of move, if it's legal we complete the move and toggle the turn 
+                    // if it is illegal we set 'to' in Handler to 'from' and keep the board to its current state
+                    //validator.validate_pawn(handler.get_dx(),handler.get_dy(),handler.get_fromy(),handler.get_tpiece());
+                    //validator.validate_knight(handler.get_dy(),handler.get_dx());
+                    validator.validate_bishop(handler.get_dy(),handler.get_dx());
+                    if(!validator.is_legal()){
+                        handler.handle_invalid_move();
+                    }else{
+                        board.update_board(handler.get_from(),handler.get_to());
+                        handler.toggle_turn();
+                        validator.reset();
+                    }
                     board.place_piece(handler.to);
+                    handler.print_move();
                 }
-                handler.print_move();
+                
             }
-            if (handler.is_valid_turn())
+            if (handler.is_moving())
             {
                 board.move_piece(mousePos.x - handler.get_offset().x, mousePos.y - handler.get_offset().y);
             }

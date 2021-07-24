@@ -3,10 +3,45 @@
 Handler::Handler()
 {
     this->turn = Colour::WHITE;
-    this->isLegalMove = false;
+    this->validPlacement = false;
     this->cPiece = 0;
     this->tPiece = 0;
 }
+
+
+
+
+
+Position Handler::get_from()
+{
+    return this->from;
+}
+
+Position Handler::get_to()
+{
+    return this->to;
+}
+
+Position Handler::get_offset()
+{
+    return this->offset;
+}
+
+ int8_t Handler::get_fromy(){
+     return this->from.y;
+ }
+    int8_t Handler::get_cpiece(){
+        return cPiece;
+    }
+    int8_t Handler::get_tpiece(){
+        return this->tPiece;
+    }
+    int8_t Handler::get_dx(){
+        return dx;
+    }
+    int8_t Handler::get_dy(){
+        return dy;
+    }
 
 Colour Handler::get_color(const int8_t &piece)
 {
@@ -25,14 +60,19 @@ Colour Handler::get_color(const int8_t &piece)
     }
 }
 
+
+
 void Handler::handle_mousePress(sf::Vector2i mouse_pos, const int8_t (&board)[8][8])
 {
     this->from.x = round(mouse_pos.x / 100);
     this->from.y = round(mouse_pos.y / 100);
     from.set_coords();
+
     offset.x = mouse_pos.x - from.coord.x;
     offset.y = mouse_pos.y - from.coord.y;
+
     this->cPiece = board[from.y][from.x];
+    
     cpColor = get_color(cPiece);
 }
 
@@ -40,20 +80,14 @@ void Handler::validate_turn()
 {
     if (this->turn == this->cpColor)
     {
-        isValidTurn = true;
+        this->isMoving = true;
+        validTurn = true;
     }
     else
     {
-        isValidTurn = false;
+        validTurn = false;
     }
-    if (isValidTurn)
-    {
-        //std::cout << "Valid turn \n";
-    }
-    else
-    {
-        //std::cout << "inValid turn \n";
-    }
+
 }
 void Handler::handle_mouse_release(sf::Vector2i mouse_pos, const int8_t (&board)[8][8])
 {
@@ -62,11 +96,6 @@ void Handler::handle_mouse_release(sf::Vector2i mouse_pos, const int8_t (&board)
     to.set_coords();
     this->tPiece = board[to.y][to.x];
     tpColor = get_color(tPiece);
-    if (this->isValidTurn)
-    {
-        toggle_turn();
-    }
-    this->isValidTurn = false;
     if (is_placed_on_same_color())
     {
         to = from;
@@ -75,28 +104,24 @@ void Handler::handle_mouse_release(sf::Vector2i mouse_pos, const int8_t (&board)
     this->dx = to.x - from.x;
     if (std::abs(cPiece) == 6)
     {
-        dy *cPiece > 0 ? isPawnForward = true : isPawnForward = false;
+        dy *cPiece > 0 ? pawnForward = true : pawnForward = false;
     }
+    this->isMoving = false;
 }
 
 bool Handler::is_valid_turn()
 {
-    return isValidTurn;
+    return validTurn;
 }
 
-Position Handler::get_offset()
-{
-    return this->offset;
-}
 
-Position Handler::get_target_coords()
-{
-    return to;
-}
+
 void Handler::toggle_turn()
 {
     turn == Colour::WHITE ? turn = Colour::BLACK : turn = Colour::WHITE;
 }
+
+
 void Handler::set_mouse_pos(sf::Vector2i mp)
 {
     mouse_pos.coord.x = mp.x;
@@ -207,19 +232,26 @@ std::string Handler::print_piece(int8_t piece)
     return p;
 }
 
-Position Handler::get_from()
-{
-    return this->from;
-}
-
-Position Handler::get_to()
-{
-    return this->to;
-}
 
 void Handler::handle_invalid_move()
 {
     this->to.x = from.x;
     this->to.y = from.y;
     to.set_coords();
+}
+
+bool Handler::is_moving(){return this->isMoving;}
+
+
+void Handler::validate_placement(){
+    if(is_placed_on_same_color()){
+        this->validPlacement = false;
+        to = from;
+    }
+    else if( (cPiece==fig::bPAWN||cPiece==fig::wPAWN) && !pawnForward){
+        this->validPlacement= false;
+        to = from; 
+    }
+    else{this->validPlacement = true;}
+
 }

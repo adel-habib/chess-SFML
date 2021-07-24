@@ -5,10 +5,17 @@
 #include<math.h>
 #include<iostream>
 
+struct coordinates
+{
+    int x,  y;
+};
+
+
 struct Position
 {
     int x, y; 
-    enum class Kind {SQUARE, COORD};
+    coordinates coord;
+    enum class Kind {INDEX, COORD};
     Kind kind;
     Position():x(0),y(0){}
     Position(Kind typ) : x(0), y(0){this->kind = typ;}
@@ -39,9 +46,16 @@ struct Position
         return nPos;
 
     }
+    Position operator=(int num){
+        Position nPos = Position(this->kind);
+        nPos.x = this->x * num;
+        nPos.y = this->y * num;
+        return nPos;
+
+    }
 
     void square_to_coords(Position squ){
-        if (squ.kind==Position::Kind::SQUARE)
+        if (squ.kind==Position::Kind::INDEX)
         {
            x = squ.x * 100;
            y = squ.y * 100;
@@ -53,6 +67,11 @@ struct Position
      void set_square(float x, float y){
          this->x=round(x/100);
          this->y=round(y/100);
+       }
+
+       void set_coords(){
+           coord.x = x * 100;
+           coord.y = y * 100;
        }
 
 };

@@ -139,7 +139,7 @@ void Board::draw_pieces(Piece pieces[], sf::RenderWindow &window){
 }
 
 int8_t Board::get_piece(const Position &square){
-    if (square.kind==Position::Kind::SQUARE && square.x<8 && square.y <8)
+    if (square.kind==Position::Kind::INDEX && square.x<8 && square.y <8)
     {
        return board[square.y][square.x];
     }else 

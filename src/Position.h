@@ -54,6 +54,9 @@ struct Position
            coord.x = x * 100;
            coord.y = y * 100;
        }
+       
 
 };
+
+
 #endif

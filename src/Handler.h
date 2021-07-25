@@ -4,6 +4,8 @@
 #include "Position.h"
 #include <SFML/Graphics.hpp>
 #include "Constants.h"
+#include"Direction.h"
+
 
 enum class Colour
 {
@@ -41,6 +43,7 @@ private:
     bool isBlocked;
     int8_t dy;
     int8_t dx;
+    Direction direction;
 
 
 public:
@@ -73,12 +76,16 @@ public:
     int8_t get_dy();
     void set_dragging();
     bool is_moving();
-    void validate_placement();
+    void validate_placement(const int8_t(&board)[8][8]);
+    void set_direction();
+    Direction get_driection();
 
     bool is_valid_placement(){
         return this->validPlacement;
     }
+    void is_jumping_piece(const int8_t (&board)[8][8]);
 
 };
+
 
 #endif

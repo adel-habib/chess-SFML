@@ -182,3 +182,13 @@ void Board::update_board(Position from, Position to){
     this->board[from.y][from.x] = fig::emptySquare;
     std::cout<<"Board updated: " << square_notation(from) << " is now: Empty and " << square_notation(to) << " is now: "<<static_cast<int16_t> (board[to.y][to.x]) << "\n";
 }
+
+void Board::remove_piece(Position to){
+    for (size_t i = 0; i < 32; i++)
+    {
+        if(pieces[i].figure.getGlobalBounds().left == to.coord.x && pieces[i].figure.getGlobalBounds().top == to.coord.y){
+            pieces[i].figure.setPosition(900,900);
+        }
+    }
+    
+}

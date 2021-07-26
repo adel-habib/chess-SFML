@@ -3,6 +3,8 @@
 #include "Constants.h"
 #include "Position.h"
 #include "Piece.h"
+
+
 class Board{
     private:
     sf::Texture t[12];
@@ -27,6 +29,7 @@ class Board{
     int8_t get_cpi();
     std::string square_notation(const Position &sq);
     void update_board(Position from, Position to);
+    void remove_piece(Position to);
 
     const int8_t (&get_board())[8][8]{
         return board;

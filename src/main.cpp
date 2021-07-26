@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <math.h>
 #include "Constants.h"
@@ -13,7 +14,11 @@ int main()
     Board board = Board();
     Handler handler;
     Validator validator;
-
+    sf::SoundBuffer buffer;
+    buffer.loadFromFile("assets/placment_sound.wav");
+    sf::Sound sound;
+    sound.setBuffer(buffer);
+    
     sf::RenderWindow window(sf::VideoMode(800, 800), "Chess!", sf::Style::Titlebar | sf::Style::Close);
 
     while (window.isOpen())
@@ -54,6 +59,8 @@ int main()
                     if(validator.is_legal())
                     {
                         board.update_board(handler.get_from(), handler.get_to());
+                        board.remove_piece(handler.get_to());
+                        sound.play();
                         handler.toggle_turn();
                         validator.reset();
                     }

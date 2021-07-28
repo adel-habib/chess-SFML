@@ -4,7 +4,9 @@
 #include<array>
 
 class Generator{
-
+    private:
+    int id;
+    int mode;
 
 
 };

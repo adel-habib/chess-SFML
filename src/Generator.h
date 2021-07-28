@@ -9,6 +9,11 @@ class Generator{
     int mode;
 
 
+    public:
+    
+
+
+
 };
 
 

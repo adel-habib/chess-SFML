@@ -1,151 +1,124 @@
 #include "Board.h"
 #include "Constants.h"
-#include "Piece.h"
 using namespace fig;
 
-
-void Board::init_board(){
-    int8_t temp[8][8] = {
-{bROCK,bKNIGHT,bBISHOP,bQUEEN,bKING,bBISHOP,bKNIGHT,bROCK},
-{bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN,bPAWN},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare,emptySquare},
-{wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN,wPAWN},
-{wROCK,wKNIGHT,wBISHOP,wQUEEN,wKING,wBISHOP,wKING,wROCK},
-};
-for (size_t i = 0; i < 8; i++)
+void Board::load_textures()
 {
-    for (size_t j = 0; j < 8; j++)
-    {
-       this->board[i][j] = temp[i][j];
-    }
-    
-}
-}
-
-void Board::load_textures(){
-    t[0].loadFromFile("assets/bK.png");
-    t[1].loadFromFile("assets/bQ.png");
-    t[2].loadFromFile("assets/bR.png"); 
-    t[3].loadFromFile("assets/bB.png");
-    t[4].loadFromFile("assets/bN.png"); 
-    t[5].loadFromFile("assets/bP.png"); 
-    t[6].loadFromFile("assets/wK.png"); 
-    t[7].loadFromFile("assets/wQ.png");
-    t[8].loadFromFile("assets/wR.png");
-    t[9].loadFromFile("assets/wB.png");
-    t[10].loadFromFile("assets/wN.png");
-    t[11].loadFromFile("assets/wP.png");
-}
-
-void Board::load_figures(){
     int cnt = 0;
-    for (size_t i = 0; i < 8; i++)
+    std::string labels[12] = {"bK", "bQ", "bN", "bB", "bN", "wP", "wK", "wQ", "wN", "wB", "wN", "wP"};
+    std::string ext = ".png";
+    for (auto &label : labels)
     {
-        for (size_t j = 0; j < 8; j++)
+        label = label + ext;
+    }
+    for (auto &t : T)
+    {
+        t.loadFromFile(labels[cnt]);
+        cnt++;
+    }
+}
+
+void Board::load_figures()
+{
+    int cnt = 0;
+    for (size_t row = 0; row < 8; row++)
+    {
+        for (size_t col = 0; col < 8; col++)
         {
-            int n = this->board[i][j];
-            if(n==0){continue;}
-            if (n == bKING)
+            int fig = this->board(row, col);
+            if (fig == 0)
             {
-                pieces[cnt].set_figure(t[0]);
-                pieces[cnt].set_color(Color::BLACK);
+                continue;
             }
-            else if (n == bQUEEN)
+            if (fig == bKING)
             {
-                pieces[cnt].set_figure(t[1]);
-                pieces[cnt].set_color(Color::BLACK);
+                pieces[cnt].setTexture(T[0]);
             }
-            else if (n == bROCK)
+            else if (fig == bQUEEN)
             {
-                pieces[cnt].set_figure(t[2]);
-                pieces[cnt].set_color(Color::BLACK);
+                pieces[cnt].setTexture(T[1]);
             }
-            else if (n == bBISHOP)
+            else if (fig == bROCK)
             {
-               pieces[cnt].set_figure(t[3]);
-               pieces[cnt].set_color(Color::BLACK);
+                pieces[cnt].setTexture(T[2]);
             }
-            else if (n == bKNIGHT)
+            else if (fig == bBISHOP)
             {
-                pieces[cnt].set_figure(t[4]);
-                pieces[cnt].set_color(Color::BLACK);
+                pieces[cnt].setTexture(T[3]);
             }
-            else if (n == bPAWN)
+            else if (fig == bKNIGHT)
             {
-                pieces[cnt].set_figure(t[5]);
-                pieces[cnt].set_color(Color::BLACK);
+                pieces[cnt].setTexture(T[4]);
             }
-            else if (n == wKING)
+            else if (fig == bPAWN)
             {
-                pieces[cnt].set_figure(t[6]);
-                pieces[cnt].set_color(Color::WHITE);
+                pieces[cnt].setTexture(T[5]);
             }
-            else if (n == wQUEEN)
+            else if (fig == wKING)
             {
-                pieces[cnt].set_figure(t[7]);
-                pieces[cnt].set_color(Color::WHITE);
+                pieces[cnt].setTexture(T[6]);
             }
-            else if (n == wROCK)
+            else if (fig == wQUEEN)
             {
-               pieces[cnt].set_figure(t[8]);
-               pieces[cnt].set_color(Color::WHITE);
+                pieces[cnt].setTexture(T[7]);
             }
-            else if (n == wBISHOP)
+            else if (fig == wROCK)
             {
-                pieces[cnt].set_figure(t[9]);
-                pieces[cnt].set_color(Color::WHITE);
+                pieces[cnt].setTexture(T[8]);
             }
-            else if (n == wKNIGHT)
+            else if (fig == wBISHOP)
             {
-                pieces[cnt].set_figure(t[10]);
-                pieces[cnt].set_color(Color::WHITE);
+                pieces[cnt].setTexture(T[9]);
             }
-            else if (n == wPAWN)
+            else if (fig == wKNIGHT)
             {
-                pieces[cnt].set_figure(t[11]);
-                pieces[cnt].set_color(Color::WHITE);
+                pieces[cnt].setTexture(T[10]);
             }
-            pieces[cnt].set_position(i,j);
-            pieces[cnt].set_value(n);
+            else if (fig == wPAWN)
+            {
+                pieces[cnt].setTexture(T[11]);
+            }
+            pieces[cnt].setPosition(row, col);
             cnt++;
         }
-        
     }
-    
 }
+
+void Board::draw_board(sf::RenderWindow &window)
+{
+    for (size_t row = 0; row < 8; row++)
+    {
+        for (int col = 0; col < 8; col++)
+        {
+            squares[row][col].setSize(sf::Vector2f(sq_sz, sq_sz));
+            squares[row][col].setPosition(sq_sz * row, sq_sz * col);
+            if (col % 2 == 0)
+            {
+                row % 2 == 0 ? squares[row][col].setFillColor(sq_col2) : squares[row][col].setFillColor(sq_col1);
+            }
+            else
+            {
+                row % 2 == 0 ? squares[row][col].setFillColor(sq_col1) : squares[row][col].setFillColor(sq_col2);
+            }
+            window.draw(squares[row][col]);
+        }
+    }
+}
+
+void Board::draw_pieces(sf::RenderWindow &window)
+{
+    for (size_t i = 0; i < 32; i++)
+    {
+        window.draw(pieces[i]);
+    }
+}
+
+/*
+
 int Board::get_size(){
     return squareSize;
 }
-void Board::draw_board(sf::RenderWindow &window){
-    for (size_t i = 0; i < 8; i++)
-        {
-            for(int j=0; j<8; j++){
-            squares[i][j].setSize(sf::Vector2f(squareSize, squareSize));
-            squares[i][j].setPosition(squareSize*i,squareSize*j);
-            if(j%2==0){i%2==0?squares[i][j].setFillColor(sq_col2):squares[i][j].setFillColor(sq_col1);}
-            else {i%2==0?squares[i][j].setFillColor(sq_col1):squares[i][j].setFillColor(sq_col2);}
-            window.draw(squares[i][j]);
-        }
-        }
-}
-void Board::draw_pieces(sf::RenderWindow &window){
-            for (size_t i = 0; i < 32; i++)
-        {
-            window.draw(pieces[i].figure);
-        }
-}
 
-int8_t Board::get_piece(const Position &square){
-    if (square.x>7 && square.y > 7)
-    {
-        std::invalid_argument("Get_piece only takes a square: INDEX \n");  
-    }
-    return board[square.y][square.x];
-    
-}
 
 Board::Board(){
     init_board();
@@ -192,3 +165,4 @@ void Board::remove_piece(Position to){
     }
     
 }
+*/

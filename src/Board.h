@@ -3,20 +3,19 @@
 #include "Constants.h"
 #include "Position.h"
 #include "Piece.h"
+#include "Grid.h"
 
 
 class Board{
     private:
-    sf::Texture t[12];
-    Piece pieces[32];
+    sf::Texture T[12];
+    sf::Sprite pieces[32];
     sf::RectangleShape squares[8][8];
-    int8_t board[8][8];
-    int8_t cpi; 
+    Grid board;
     
     
     public:
     Board();
-    void init_board();
     void load_textures();
     void load_figures();
     void draw_board(sf::RenderWindow &window);
@@ -31,7 +30,7 @@ class Board{
     void update_board(Position from, Position to);
     void remove_piece(Position to);
 
-    const int8_t (&get_board())[8][8]{
+    const Grid &get_board(){
         return board;
     }
 };

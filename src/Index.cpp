@@ -1,6 +1,6 @@
 #include "Index.h"
 
-Index::Index() : row(0), column(0), s_max(7) { set_coords(); }
+Index::Index() :  s_max(7) {this->column=0; this->row=0; set_coords(); }
 
 Index::Index(size_t x, size_t y) : s_max(7)
 {
@@ -80,9 +80,8 @@ void Index::increment_col(){
     }
 }
 void Index::decrement_col(){
-    if(this->column < 0){
         this->column--;
-    }
+
 }
 
 void Index::set_coords()
@@ -93,4 +92,16 @@ void Index::set_coords()
 std::string Index::to_chess_notation()
 {
     return static_cast<char>('a' + abs(7 - this->row)) + std::to_string(this->column + 1);
+}
+
+std::ostream& operator<<(std::ostream& os, const Index& index)
+{
+    os << " Index: (" << static_cast<int16_t> (index.row) << ',' <<  static_cast<int16_t> (index.column) << ") ";
+    return os;
+}
+
+void Index::mousepos_to_index(sf::Vector2i position){
+    this->column = std::round(position.x/100);
+    this->row = std::round(position.y/100);
+    this->set_coords();
 }

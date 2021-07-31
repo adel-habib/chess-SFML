@@ -1,7 +1,8 @@
 #ifndef INDEX_H
 #define INDEX_H
-
+#include <SFML/Graphics.hpp>
 #include <iostream>
+#include <math.h>       
 struct Coords
 {
     uint16_t x, y;
@@ -35,7 +36,10 @@ public:
     void increment_col();
     void decrement_col();
     void set_coords();
+    void mousepos_to_index(sf::Vector2i mousepos);
     std::string to_chess_notation();
+    friend std::ostream& operator<<(std::ostream& os, const Index& index);
+
 
 
 };

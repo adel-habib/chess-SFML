@@ -10,7 +10,11 @@ class Grid
 {
     private:
     int8_t board[sz][sz];
-
+    sf::RectangleShape squares[64];
+    sf::Texture T[12];
+    sf::Sprite pieces[32];
+    Index current_index;
+    Index target_index;
 
     public:
     Grid();
@@ -23,9 +27,12 @@ class Grid
     void move(const Index &from, const Index &to);
 
     void init_board();
+    void draw_board(sf::RenderWindow &window);
     void load_textures();
-    void set_textures();
-
+    void load_pieces();
+    void print_board();
+    void draw_pieces(sf::RenderWindow &window);
+    void handle_event(sf::RenderWindow &window,sf::Event &event,sf::Vector2i &position);
 
     
 

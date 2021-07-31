@@ -31,7 +31,23 @@
         "limits": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "array": "cpp",
+        "bit": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "ctime": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "iostream": "cpp"
     },
     "terminal.integrated.shell.windows": "cmd.exe"
 }

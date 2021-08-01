@@ -105,3 +105,8 @@ void Index::mousepos_to_index(sf::Vector2i position){
     this->row = std::round(position.y/100);
     this->set_coords();
 }
+
+uint8_t Index::index_to_sq(){
+    uint8_t ind;
+    return ind = (row * 7) + row +  column;
+}

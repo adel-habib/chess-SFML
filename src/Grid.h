@@ -15,6 +15,10 @@ class Grid
     sf::Sprite pieces[32];
     Index current_index;
     Index target_index;
+    uint8_t current_figure;
+    uint8_t current_square;
+    bool draggable;
+    int dx, dy;
 
     public:
     Grid();
@@ -32,8 +36,13 @@ class Grid
     void load_pieces();
     void print_board();
     void draw_pieces(sf::RenderWindow &window);
-    void handle_event(sf::RenderWindow &window,sf::Event &event,sf::Vector2i &position);
-
+    void handle_press(sf::Vector2i &position);
+    void handle_release(sf::Vector2i &position);
+    void set_board_squares();
+    void set_square_size();
+    bool is_draggable();
+    void drag_piece(sf::Vector2i mousepos);
+    void set_sq();
     
 
 };

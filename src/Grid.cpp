@@ -1,7 +1,7 @@
 #include "Grid.h"
 Grid::Grid()
 {
-
+    draggable = false;
     init_board();
     load_textures();
 
@@ -71,6 +71,13 @@ void Grid::print_board()
 
 void Grid::draw_board(sf::RenderWindow &window)
 {
+    for (size_t i = 0; i < 64; i++)
+    {
+        window.draw(squares[i]);
+    }
+}
+void Grid::set_board_squares()
+{
     int x = 0;
     int j = 0;
     for (size_t i = 0; i < 64; i++)
@@ -90,10 +97,10 @@ void Grid::draw_board(sf::RenderWindow &window)
         {
             (x % 2 == 0) ? squares[i].setFillColor(sq_col1) : squares[i].setFillColor(sq_col2);
         }
-        window.draw(squares[i]);
         x++;
     }
 }
+
 void Grid::load_textures()
 {
     std::string labels[12] = {"bK", "bQ", "bR", "bB", "bN", "bP", "wK", "wQ", "wR", "wB", "wN", "wP"};
@@ -182,29 +189,40 @@ void Grid::draw_pieces(sf::RenderWindow &window)
     }
 }
 
-void Grid::handle_event(sf::RenderWindow &window,sf::Event &event,sf::Vector2i &position){
-        while (window.pollEvent(event))
+void Grid::handle_press(sf::Vector2i &position)
+{
+    std::cout << " handle press \n";
+    for (size_t i = 0; i < 32; i++)
+    {
+        if (pieces[i].getGlobalBounds().contains(position.x, position.y))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            // Mouse click handling 
-            if(event.type==sf::Event::MouseButtonPressed){
-                if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-                    for (int i = 0; i < 32; i++)
-                    {
-                        if(pieces[i].getGlobalBounds().contains(position.x,position.y)){
-                            current_index.mousepos_to_index(position);
-                            std::cout << current_index << "\n";
-                        }
-                    }
-                    
-                    
-                }
-
-            }
-            if(event.type == sf::Event::MouseButtonReleased){
-                this->target_index.mousepos_to_index(position);
-                std::cout<< " Target:" << target_index;
-            }
+            current_index.mousepos_to_index(position);
+            current_figure = i;
+            current_square = current_index.index_to_sq();
+            squares[current_square].setFillColor(sq_selected);
+            draggable = true;
+            dx = current_index.coord.x;
+            dy = current_index.coord.y;
         }
+    }
 }
+
+void Grid::handle_release(sf::Vector2i &position)
+{
+    target_index.mousepos_to_index(position);
+    draggable = false;
+    pieces[current_figure].setPosition(target_index.coord.x, target_index.coord.y);
+    set_board_squares();
+}
+
+bool Grid::is_draggable()
+{
+
+    return draggable;
+}
+
+void Grid::drag_piece(sf::Vector2i mousepos)
+{
+    this->pieces[current_figure].setPosition(mousepos.x - dx, mousepos.y - dy);
+}
+

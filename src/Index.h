@@ -38,6 +38,7 @@ public:
     void set_coords();
     void mousepos_to_index(sf::Vector2i mousepos);
     std::string to_chess_notation();
+    uint8_t index_to_sq();
     friend std::ostream& operator<<(std::ostream& os, const Index& index);
 
 

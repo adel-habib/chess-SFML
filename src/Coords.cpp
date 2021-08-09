@@ -15,3 +15,11 @@ Coords Coords::index_to_coords(int ind){
     return C;
 }
 
+unsigned short int Coords::get_row(){
+    return this->row;
+}
+
+unsigned short int Coords::get_col(){
+    return this->col;
+}
+

@@ -3,7 +3,8 @@
 void Board::init_board()
 {
     int cnt = 0;
-    char pieces[16] = {'r','n','b','q','k','b','n','r','p','p','p','p','p','p','p','p'};
+    //char pieces[16] = {'r','n','b','q','k','b','n','r','p','p','p','p','p','p','p','p'};
+    std::string pieces = "rnbqkbnrpppppppp";
 
     for (int i = 0; i < 16; i++)
     {
@@ -23,12 +24,15 @@ void Board::init_board()
         board[i] = pieces[cnt] - 32;
         cnt++;
     }
+}
 
-    
-    
+void Board::move_piece()
+{
+    board[to.index()] = board[from.index()];
+    board[from.index()] = 'e';
+}
 
-
-    
-    
-    
+char Board::operator[](int index)
+{
+    return board[index];
 }

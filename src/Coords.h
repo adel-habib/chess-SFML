@@ -17,8 +17,8 @@ class Coords{
     Coords index_to_coords(int ind);
     // Maps coords to chess notation i.e a1a3 
     string algebraic_notation();
-    
-
+    unsigned short int get_row();
+    unsigned short int get_col();
 
     
 

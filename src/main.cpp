@@ -5,9 +5,6 @@
 using namespace std;
 
 int main(){
-   
-    Board b;
-    b.init_board();
     Gui gui;
     gui.mainloop();
 }

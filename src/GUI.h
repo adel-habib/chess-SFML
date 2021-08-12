@@ -19,12 +19,18 @@ private:
     sf::SoundBuffer buffer;
     sf::Sound sound;
     sf::Vector2i mousepos;
-
+    sf::Vector2i offset;
 
 
     Board board;
+    bool expect_target;
+    bool moveOnClick;
     Coords from;
     Coords to;
+    char pressed_piece;
+    int pressed_figure;
+    bool drag;
+
 public:
     Gui();
     void mainloop();
@@ -36,7 +42,11 @@ public:
     void draw_pieces();
     
     // Handling events 
-    void detect_press();
+    void handle_press();
+    void handle_release();
+    void move_piece();
+    void highlight_squares(vector<int> validmoves);
+    void set_pos(bool s_from);
 };
 
 

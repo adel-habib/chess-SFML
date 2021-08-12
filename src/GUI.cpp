@@ -1,14 +1,12 @@
 #include "GUI.h"
 
-
-Gui::Gui() : window(sf::VideoMode(800, 800), "Chess SFML", sf::Style::Titlebar | sf::Style::Close)
+Gui::Gui() : window(sf::VideoMode(800, 800), "Chess SFML", sf::Style::Titlebar | sf::Style::Close), expect_target(false), moveOnClick(false), drag(false)
 {
     board.init_board();
     set_squares();
     init_textures();
     init_sprites();
 }
-
 
 // Setting up the board
 
@@ -44,7 +42,6 @@ void Gui::draw_squares()
         window.draw(squares[i]);
     }
 }
-
 
 void Gui::init_textures()
 {
@@ -93,7 +90,54 @@ void Gui::draw_pieces()
     }
 }
 
+void Gui::set_pos(bool s_from)
+{
+    for (size_t i = 0; i < 32; i++)
+    {
+        if (pieces[i].getGlobalBounds().contains(mousepos.x, mousepos.y))
+        {
+            if (s_from)
+            {
+                from = mousepos;
+                drag = true;
+                pressed_piece = board[from.index()];
+                pressed_figure = i;
+                expect_target = true;
+            }
+        }
+        else
+        {
+            to = mousepos;
+        }
+    }
+}
+void Gui::handle_press()
+{
+    
 
+}
+
+void Gui::handle_release() 
+{
+    
+}
+
+void Gui::highlight_squares(vector<int> validmoves)
+{
+    for (auto move : validmoves)
+    {
+        squares[move].setFillColor(sq_selected);
+    }
+}
+
+void Gui::move_piece()
+{
+    Coords offset;
+    offset = to - from;
+    cout << offset;
+    
+    pieces[pressed_figure].move(offset.get_col() * 100, offset.get_row() * 100 );
+}
 
 void Gui::mainloop()
 {
@@ -109,13 +153,22 @@ void Gui::mainloop()
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
             {
-                std::cout << round(mousepos.x/100) << " " << round(mousepos.y/100) << endl;
+                handle_press();
+            }
+            else if (event.type == sf::Event::MouseButtonReleased)
+            {
+                handle_release();
+            }
+            if(drag){
+                pieces[pressed_figure].setPosition(mousepos.x+offset.x,mousepos.y+offset.y);
             }
         }
+
         // Clear the whole window before rendering a new frame
         window.clear();
         // Draw some graphical entities
         draw_squares();
+        
         draw_pieces();
         // End the current frame and display its contents on screen
         window.display();

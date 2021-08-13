@@ -12,11 +12,73 @@ using namespace std;
 #define set_bit(bitboard, square) (bitboard |= (1UL << square))
 #define pop_bit(bitboard, square) (get_bit(bitboard,square) ? bitboard^=(1ULL << square) : 0)
 
+
+// count bits within a bitboard (Brian Kernighan's way)
+static inline int count_bits(u64 bitboard)
+{
+    // bit counter
+    int count = 0;
+    
+    // consecutively reset least significant 1st bit
+    while (bitboard)
+    {
+        // increment count
+        count++;
+        
+        // reset least significant 1st bit
+        bitboard &= bitboard - 1;
+    }
+    
+    // return bit count
+    return count;
+}
+
+// get least significant 1st bit index
+static inline int get_ls1b_index(u64 bitboard)
+{
+    // make sure bitboard is not 0
+    if (bitboard)
+    {
+        // count trailing bits before LS1B
+        return count_bits((bitboard & -bitboard) - 1);
+    }
+    
+    //otherwise
+    else
+        // return illegal index
+        return -1;
+}
+
+
 // constants 
 const u64 not_a_file = 18374403900871474942ULL;
 const u64 not_h_file = 9187201950435737471ULL;
 const u64 not_hg_file = 4557430888798830399UL;
 const u64 not_ab_file = 18229723555195321596ULL;
+
+const int bishop_relevant_bits[64] = {
+    6, 5, 5, 5, 5, 5, 5, 6, 
+    5, 5, 5, 5, 5, 5, 5, 5, 
+    5, 5, 7, 7, 7, 7, 5, 5, 
+    5, 5, 7, 9, 9, 7, 5, 5, 
+    5, 5, 7, 9, 9, 7, 5, 5, 
+    5, 5, 7, 7, 7, 7, 5, 5, 
+    5, 5, 5, 5, 5, 5, 5, 5, 
+    6, 5, 5, 5, 5, 5, 5, 6
+};
+
+// rook relevant occupancy bit count for every square on board
+const int rook_relevant_bits[64] = {
+    12, 11, 11, 11, 11, 11, 11, 12, 
+    11, 10, 10, 10, 10, 10, 10, 11, 
+    11, 10, 10, 10, 10, 10, 10, 11, 
+    11, 10, 10, 10, 10, 10, 10, 11, 
+    11, 10, 10, 10, 10, 10, 10, 11, 
+    11, 10, 10, 10, 10, 10, 10, 11, 
+    11, 10, 10, 10, 10, 10, 10, 11, 
+    12, 11, 11, 11, 11, 11, 11, 12
+};
+
 // print board
 void print_bitboard(u64 bitboard)
 {
@@ -58,6 +120,7 @@ enum {white, black};
 u64 pawn_attacks[2][64];
 u64 knight_attacks[64];
 u64 bishop_attacks[64];
+u64 king_attacks[64];
 
 
 
@@ -187,7 +250,145 @@ void init_bishop_attacks(){
     
 }
 
+
+// generate bishop attacks on the fly
+u64 bishop_attacks_on_the_fly(int square, u64 block)
+{
+    // result attacks bitboard
+    u64 attacks = 0ULL;
+    
+    // init ranks & files
+    int r, f;
+    
+    // init target rank & files
+    int tr = square / 8;
+    int tf = square % 8;
+    
+    // generate bishop atacks
+    for (r = tr + 1, f = tf + 1; r <= 7 && f <= 7; r++, f++)
+    {
+        attacks |= (1ULL << (r * 8 + f));
+        if ((1ULL << (r * 8 + f)) & block) break;
+    }
+    
+    for (r = tr - 1, f = tf + 1; r >= 0 && f <= 7; r--, f++)
+    {
+        attacks |= (1ULL << (r * 8 + f));
+        if ((1ULL << (r * 8 + f)) & block) break;
+    }
+    
+    for (r = tr + 1, f = tf - 1; r <= 7 && f >= 0; r++, f--)
+    {
+        attacks |= (1ULL << (r * 8 + f));
+        if ((1ULL << (r * 8 + f)) & block) break;
+    }
+    
+    for (r = tr - 1, f = tf - 1; r >= 0 && f >= 0; r--, f--)
+    {
+        attacks |= (1ULL << (r * 8 + f));
+        if ((1ULL << (r * 8 + f)) & block) break;
+    }
+    
+    // return attack map
+    return attacks;
+}
+
+// generate rook attacks on the fly
+u64 rook_attacks_on_the_fly(int square, u64 block)
+{
+    // result attacks bitboard
+    u64 attacks = 0ULL;
+    
+    // init ranks & files
+    int r, f;
+    
+    // init target rank & files
+    int tr = square / 8;
+    int tf = square % 8;
+    
+    // generate rook attacks
+    for (r = tr + 1; r <= 7; r++)
+    {
+        attacks |= (1ULL << (r * 8 + tf));
+        if ((1ULL << (r * 8 + tf)) & block) break;
+    }
+    
+    for (r = tr - 1; r >= 0; r--)
+    {
+        attacks |= (1ULL << (r * 8 + tf));
+        if ((1ULL << (r * 8 + tf)) & block) break;
+    }
+    
+    for (f = tf + 1; f <= 7; f++)
+    {
+        attacks |= (1ULL << (tr * 8 + f));
+        if ((1ULL << (tr * 8 + f)) & block) break;
+    }
+    
+    for (f = tf - 1; f >= 0; f--)
+    {
+        attacks |= (1ULL << (tr * 8 + f));
+        if ((1ULL << (tr * 8 + f)) & block) break;
+    }
+    
+    // return attack map
+    return attacks;
+}
+
+// init leaper pieces attacks
+void init_leapers_attacks()
+{
+    // loop over 64 board squares
+    for (int square = 0; square < 64; square++)
+    {
+        // init pawn attacks
+        pawn_attacks[white][square] = mask_pawn_attacks(white, square);
+        pawn_attacks[black][square] = mask_pawn_attacks(black, square);
+        
+        // init knight attacks
+        knight_attacks[square] = mask_knight_attacks(square);
+        
+        // init king attacks
+        king_attacks[square] = mask_king_attacks(square);
+    }
+}
+
+
+// set occupancies 
+u64 set_occupancy(int index, int bits_in_mask, int u64 attack_mask){
+    // occupancy map 
+    u64 occupancy = 0ULL;
+    for (size_t i = 0; i < bits_in_mask; i++)
+    {
+        int square = get_ls1b_index(attack_mask);
+        pop_bit(attack_mask,square);
+        if(index & (1<<i)) occupancy |= (1ULL << square);
+    }
+    
+
+
+
+
+    return occupancy;
+}
+
+// random generator 
+unsigned int state = 1804289383;
+// generate 32-bit pseudo legal numbers 
+unsigned int get_random_number(){
+    // get current state 
+    unsigned int number= state;
+    // XOR SHIFT ALGORITHM 
+    number ^= number <<13;
+    number ^= number>> 17;
+    number ^= number << 5;
+    state = number;
+    return number;
+
+    }
+
 int main()
 {
-    print_bitboard(mask_rock_attacks(b6));
+    init_leapers_attacks();
+    
 }

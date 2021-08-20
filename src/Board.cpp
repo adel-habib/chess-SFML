@@ -3,7 +3,6 @@
 void Board::init_board()
 {
     int cnt = 0;
-    //char pieces[16] = {'r','n','b','q','k','b','n','r','p','p','p','p','p','p','p','p'};
     string pieces = "rnbqkbnrpppppppp";
 
     for (int i = 0; i < 16; i++)

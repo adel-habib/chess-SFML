@@ -7,9 +7,13 @@
 #define get_bit(bitboard, square) ((bitboard) & (1ULL << (square)))
 #define pop_bit(bitboard, square) ((bitboard) &= ~(1ULL << (square)))
 
-//enum class bitboardmap {wp, wn, wb, wr, wq, wk, bp, bn, bb, br, bq, bk};
 
- std::string chessboard = "rnbqkbnrpppppppp00000000000000000000000000000000RNBQKNRPPPPPPPP";
- std::string pieces = "pnbrqkPNBRQK";
+namespace Constants{
+    constexpr const char* BINARY64 =   "0000000000000000000000000000000000000000000000000000000000000000";
+    constexpr const char* CHESSBOARD = "rnbqkbnrpppppppp00000000000000000000000000000000PPPPPPPPRNBQKBNR";
+    constexpr const char* PIECES = "pnbrqkPNBRQK";
+    
+    // Bitboard values at the beginning of the game for the default positions (Obtained from the function bitb init_boards)
+};
 
 #endif
